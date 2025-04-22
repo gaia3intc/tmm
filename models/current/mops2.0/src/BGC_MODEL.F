@@ -132,12 +132,13 @@ C flux_bury_c   burial of C in sediment [mmol C/m2] (by T.Tanioka)
       real*8 phygrow0,detloss
       real*8 phygrow(maxpft),phyexu(maxpft),phyloss(maxpft)
       real*8 graz0,graz,zooexu,zooloss
+      real*8 graz_z1(maxpft), graz_z2(maxpft)
       real*8 eflux,flux_u,flux_l
       real*8 tempscale,TACmuphy,TACik
       real*8 remindet,remindop
       real*8 phi,glbygd
 
-      integer i,k,kk,n,it,bgc_keuphloc
+      integer i,j,k,kk,n,it,bgc_keuphloc
       real*8 bgc_runoffvol(bgc_ktotal),bgc_globalrunoff
       real*8 runoff(bgc_ktotal)
       real*8 oxymm,o2req,o2usefrac,fDET
@@ -152,13 +153,17 @@ C flux_bury_c   burial of C in sediment [mmol C/m2] (by T.Tanioka)
       real*8 phymort(maxpft),zoomort 
       real*8 flux_old,fdiv_old 
       real*8 mu                
+
 #ifdef NOSED      
       real*8 remindet_inst   
 #endif      
+
       real*8 pbiomass(maxpft), cbiomass(maxpft)
+      real*8 nom_pref_z1(maxpft)
       
 #ifdef PFT
       real*8 PHY2
+      real*8 food_tot, food_p(maxpft)
 #endif
 
 ! carbon chemistry
@@ -171,7 +176,8 @@ C flux_bury_c   burial of C in sediment [mmol C/m2] (by T.Tanioka)
 #ifdef ORGCARBON   
       real*8 phycmort(maxpft),zoocmort 
       real*8 phycexu(maxpft),phycloss(maxpft),phycgrow(maxpft)
-      real*8 grazc,grazc0 
+      real*8 grazc,grazc0,grazct
+      real*8 grazc_z1_on_p1, grazc_z1_on_p2
       real*8 zoocrel,zooprel                 
       real*8 zoocloss,zoocexu
       real*8 remindoc,reminpoc,denitdoc,denitpoc
@@ -245,6 +251,8 @@ C flux_bury_c   burial of C in sediment [mmol C/m2] (by T.Tanioka)
         f11_out(k)=0.0d0
         f12_out(k)=0.0d0
         f13_out(k)=0.0d0
+        f14_out(k)=0.0d0
+        f15_out(k)=0.0d0
 #endif
 #endif
         
@@ -323,7 +331,8 @@ C INTERNAL TIME LOOP FOR BGC
 !     Reset arrays KM
       pbiomass = 0.0d0
       cbiomass = 0.0d0
-
+      nom_pref_z1 = 1.0d0/maxpft
+      
 ! AIR-SEA GAS EXCHANGE OF OXYGEN
 
       surf_oxy = bgc_tracer(1,ioxy)
@@ -340,7 +349,7 @@ C INTERNAL TIME LOOP FOR BGC
 ! Surface total alkalinity from the OCMIP protocol
       surf_alk = ocmip_alkfac*bgc_salt(1)
 
-! Surface silicate from the OCMIP protocol
+! Surface silicate from the OCMIP protocol                                                                      
       surf_sil=ocmip_silfac      
       
       CALL CO2_SURFFORCING(vgas660,bgc_atmosp,
@@ -506,17 +515,54 @@ ckm            cp_phyto(i) = PHYC/PHY
 #ifdef PFT
        PHYC2=MAX(bgc_tracer(k,iphyc2)-alimit*alimit*rcp_det_ez(2),0.0d0)
        cbiomass(2) = PHYC2
-       !print*,' PHYC2: ',PHYC2
+!print*,' PHYC2: ',PHYC2
+
+       ! KM (10/2023) abundance dependent grazing of Fasham (Holling Type 2) and MOPS (Type 3)
+       food_tot = sum(nom_pref_z1*pbiomass)
 #endif
 #endif       
        
-       ! KM: Reset for each euphotic zone layer K (before npft loop)
+       ! KM: Reset for each euphotic zone layer K (before nzft and npft loops)
        phygrow = 0.0d0   ! probably not needed
        phyexu  = 0.0d0
        phyloss = 0.0d0
+       zooexu  = 0.0d0
+       zooloss = 0.0d0
+       graz    = 0.0d0
+       graz_z1 = 0.0d0
        
        nfixation = 0.0d0 ! probably not needed
+
+!       ! KM (10/2023) abundance dependent grazing of Fasham (Holling Type 2) and MOPS (Type 3)
+!       food_tot = sum(nom_pref_z1*pbiomass)
+
+#ifdef GRAZE_FASHAM
+       food_p = nom_pref_z1*pbiomass**2
+#elif  GRAZE_3_PREF
+       food_p = nom_pref_z1*pbiomass**3
+#endif  
+
+!       print*,'k, food_tot: ',k,food_tot
+!       print*,' food_p: ', food_p
+
        
+!km       DO 1050 i=1,nzft
+       DO 1050 j=1,1
+
+        if(ZOO.gt.0.0d0) then
+! Zooplankton exudation
+           zooexu = AClambdaz * ZOO   
+! Zooplankton mortality 
+           zooloss= AComniz * ZOO * ZOO   
+! Calculate zooplankton grazing within the npft loop (1100) for each pbiomass(i)>0
+        else                    !ZOO < 0
+           zooexu = 0.0d0
+           zooloss = 0.0d0   
+        endif                   !ZOO
+       
+ 1050  ENDDO
+      
+              
        DO 1100 i=1,npft  
           
 ! Temperature dependence of phytoplankton growth (Eppley)
@@ -573,21 +619,33 @@ ckm       if(PHY.gt.0.0d0) then
 ! Other losses of phytoplankton       
            phyloss(i) = AComni(i) * pbiomass(i) * pbiomass(i)
 
-           if(ZOO.gt.0.0d0) then                     
+           
+           if(ZOO.gt.0.0d0) then
 
-! Grazing of zooplankton, Holling III
+!km (10/2023) various grazing formulae
+             
+#ifdef GRAZE_FASHAM
+! Grazing based on Fasham (Holling II) with weighted preference based on abundance
+              graz0=ACmuzoo*food_p(i)*ZOO
+     &             /(ACkphy*food_tot + sum(food_p))
+#elif GRAZE_3_PREF
+! Grazing based Holling III with weighted preference based on abundance
+              graz0=ACmuzoo*food_p(i)*ZOO
+     &             /(ACkphy**2*food_tot + sum(food_p))
+#else
+! Original MOPS grazing based Holling III
               graz0=ACmuzoo*pbiomass(i)*pbiomass(i)
-     &             /(ACkphy*ACkphy+pbiomass(i)*pbiomass(i))*ZOO
-
+     &             /(ACkphy*ACkphy + pbiomass(i)*pbiomass(i))*ZOO
+#endif
+              
 ! Make sure not to graze more phytoplankton than available.
               graz = MIN(pbiomass(i),graz0*bgc_dt)/bgc_dt
 
-           else !ZOO < 0
-
+           else                 !ZOO < 0
               graz=0.0d0
-
            endif !ZOO
 
+           
         else !PHY < 0
 
            phygrow(i)= 0.0d0
@@ -597,33 +655,39 @@ ckm       if(PHY.gt.0.0d0) then
            mu        = 0.0d0 
 
         endif !PHY
+        
         !print*,' phyexu: ',phyexu
         !print*,' phyloss: ',phyloss
         !print*,' graz: ', graz
 
-        if (i.eq.npft) then
-        
-           if(ZOO.gt.0.0d0) then              
-! Zooplankton exudation
-              zooexu = AClambdaz * ZOO   
+!km        if (i.eq.npft) then
+!km        
+!km           if(ZOO.gt.0.0d0) then              
+!km! Zooplankton exudation
+!km              zooexu = AClambdaz * ZOO   
+!km
+!km! Zooplankton mortality 
+!km              zooloss= AComniz * ZOO * ZOO   
+!km           else                 !ZOO < 0
+!km              zooexu = 0.0d0
+!km              zooloss = 0.0d0   
+!km           endif                !ZOO
+!km
+!km        else
+!km
+!km           zooexu = 0.0d0
+!km           zooloss = 0.0d0   
+!km           
+!km        endif
+!km        !print*,' zooexu, zooloss: ',zooexu,zooloss
 
-! Zooplankton mortality 
-              zooloss= AComniz * ZOO * ZOO   
-           else                 !ZOO < 0
-              zooexu = 0.0d0
-              zooloss = 0.0d0   
-           endif                !ZOO
+        graz_z1(i) = graz
 
-        else
-
-           zooexu = 0.0d0
-           zooloss = 0.0d0   
-           
-        endif
-        !print*,' zooexu, zooloss: ',zooexu,zooloss
-
-        grazt  = grazt + graz   ! add grazing fluxes from the 2 PFTs
-        !print*,' grazt: ',grazt
+!        print*,' i, food_tot: ',i, food_tot
+!        print*,'  nom_pref_z1: ',nom_pref_z1
+!        print*,'  pbiomass: ',pbiomass
+!        print*,'  food_p: ',food_p
+!        print*,'  graz_z1: ',graz_z1 
 
 ! Relaxation of N:P to Redfield values (mimick cyanobacteria)
 ! KM do this only once for the last i index
@@ -761,8 +825,10 @@ ckm       if(PHY.gt.0.0d0) then
 #ifdef PFT
         if (i.eq.1) then
            f11_out(k) = rcp_det_ez(i)     ! C:P of PFT 1
+           f14_out(k) = f14_out(k) + graz_z1(i)*bgc_dt ! grazing by z1 on p1
         elseif (i.eq.2) then
-           f12_out(k) = rcp_det_ez(i)     ! C:P of PFT 2  
+           f12_out(k) = rcp_det_ez(i)     ! C:P of PFT 2
+           f15_out(k) = f15_out(k) + graz_z1(i)*bgc_dt ! grazing by z1 on p2
         endif
         f13_out(k) = rcp_zoo              ! C:P of ZOO
 #else
@@ -774,7 +840,7 @@ ckm       if(PHY.gt.0.0d0) then
 #endif        
        
  1100  ENDDO                     !loop over PFTs (npft)
-         
+       
  1000 ENDDO                      !loop over euphotic zone (bgc_keuphloc)
 
 

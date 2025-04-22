@@ -10,7 +10,9 @@ riverFile='perry1996-runoff_noname.txt';
 % base_path='/data2/spk/TransportMatrixConfigs/MITgcm_2.8deg';
 % base_path='/data2/spk/TransportMatrixConfigs/MITgcm_ECCO';
 % base_path='/data2/spk/TransportMatrixConfigs/MITgcm_ECCO_v4';
-base_path='~/TMM2/MITgcm_2.8deg';
+
+base_path='/home/matsumot/katsumi/TMM2/MITgcm_2.8deg';
+%base_path='~/TMM2/MITgcm_2.8deg';
 
 % Set path names, etc.
 load(fullfile(base_path,'config_data'))

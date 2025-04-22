@@ -98,12 +98,19 @@ extern void mops_biogeochem_diagnostics_(PetscInt *Nrloc,
                                          PetscScalar localfbgc7[], PetscScalar localfbgc8[], PetscScalar localfbgc9[],
                                          PetscScalar localfbgc10[]);
 #else
+/*extern void mops_biogeochem_diagnostics_(PetscInt *Nrloc, 
+                                         PetscScalar localfbgc1[], PetscScalar localfbgc2[], PetscScalar localfbgc3[], 
+					 PetscScalar localfbgc4[], PetscScalar localfbgc5[], PetscScalar localfbgc6[], 
+                                         PetscScalar localfbgc7[], PetscScalar localfbgc8[], PetscScalar localfbgc9[],
+                                         PetscScalar localfbgc10[], PetscScalar localfbgc11[],
+                                         PetscScalar localfbgc12[], PetscScalar localfbgc13[]);*/
 extern void mops_biogeochem_diagnostics_(PetscInt *Nrloc, 
                                          PetscScalar localfbgc1[], PetscScalar localfbgc2[], PetscScalar localfbgc3[], 
 					 PetscScalar localfbgc4[], PetscScalar localfbgc5[], PetscScalar localfbgc6[], 
                                          PetscScalar localfbgc7[], PetscScalar localfbgc8[], PetscScalar localfbgc9[],
                                          PetscScalar localfbgc10[], PetscScalar localfbgc11[],
-                                         PetscScalar localfbgc12[], PetscScalar localfbgc13[]);
+                                         PetscScalar localfbgc12[], PetscScalar localfbgc13[],
+                                         PetscScalar localfbgc14[], PetscScalar localfbgc15[]);
 #endif
 #endif      
 #endif      

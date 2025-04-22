@@ -7,9 +7,12 @@ function write_ts28(netcdfFileName);
 
 ['write_ts28']
 
-base_path='~/TMM2/MITgcm_2.8deg';
+base_path='/home/matsumot/katsumi/TMM2/MITgcm_2.8deg';
+%base_path='~/TMM2/MITgcm_2.8deg';
 %base_path='~/TMM2/MITgcm_ECCO';
-addpath(genpath('~/TMM2/tmm_matlab_code'));
+
+addpath(genpath('/home/matsumot/katsumi/TMM2/tmm_matlab_code'));
+%addpath(genpath('~/TMM2/tmm_matlab_code'));
 
 load(fullfile(base_path,'config_data'))
 

@@ -1,7 +1,7 @@
 C$Header: /Users/ikriest/CVS/mops/mops_biogeochem_diagnostics.F,v 1.2 2016/06/03 09:28:59 ikriest Exp $
 C$Name: mops-2_0 $
 C T.Tanioka added fbgc8, fbgc9, fbgc10, fbgc 11 (Nov 2020)
-C K.M. Declare more fbg variables than needed...too painful to get the exact output for different config
+C KM: declare more fbg variables than needed...too painful to get the exact output for different config      
 
 CBOP
 C !ROUTINE: MODEL
@@ -38,10 +38,14 @@ C !INTERFACE: ==========================================================
      &           fbgc1loc,fbgc2loc,fbgc3loc,fbgc4loc,fbgc5loc,
      &           fbgc6loc,fbgc7loc,fbgc8loc,fbgc9loc,fbgc10loc)
 #else
+!      SUBROUTINE MOPS_BIOGEOCHEM_DIAGNOSTICS(Nrloc,
+!     &           fbgc1loc,fbgc2loc,fbgc3loc,fbgc4loc,fbgc5loc,
+!     &           fbgc6loc,fbgc7loc,fbgc8loc,fbgc9loc,fbgc10loc,
+!     &           fbgc11loc,fbgc12loc,fbgc13loc)
       SUBROUTINE MOPS_BIOGEOCHEM_DIAGNOSTICS(Nrloc,
      &           fbgc1loc,fbgc2loc,fbgc3loc,fbgc4loc,fbgc5loc,
      &           fbgc6loc,fbgc7loc,fbgc8loc,fbgc9loc,fbgc10loc,
-     &           fbgc11loc,fbgc12loc,fbgc13loc)
+     &           fbgc11loc,fbgc12loc,fbgc13loc,fbgc14loc,fbgc15loc)
 #endif
 #endif      
       
@@ -64,6 +68,7 @@ C     Output variables
      &       fbgc8loc(Nrloc)
       real*8 fbgc9loc(Nrloc),fbgc10loc(Nrloc),fbgc11loc(Nrloc)
       real*8 fbgc12loc(Nrloc),fbgc13loc(Nrloc)
+      real*8 fbgc14loc(Nrloc),fbgc15loc(Nrloc)
 
 C !LOCAL VARIABLES: ====================================================
           INTEGER k
@@ -113,6 +118,8 @@ C     Copy diagnostic variables
         fbgc11loc(k)=f11_out(k)
         fbgc12loc(k)=f12_out(k)
         fbgc13loc(k)=f13_out(k)
+        fbgc14loc(k)=f14_out(k)
+        fbgc15loc(k)=f15_out(k)
 #endif
 #endif      
       

@@ -1,3 +1,41 @@
+KM, 2021-09
+Added second PFT in terms of C on MOPS-CP that TT has build
+Created a new ifdef 2PFT. n"
+
+Added an integer variable "npft" over which I would loop over. The following variables were scalars but were modified
+to be arrays with size npft:
+(1) BGC_INI: plambda, ACkpo4, AComni, AClambda, ACmuphy
+(2) BGC_MODEL: PHY, PHYC, tophy, tophyc, rcp_phyto, cp_phyto, rcp_det_ez
+    	       phygrow, phyexu, phyloss, phyort
+
+BGC tracers
+    original MOPS (7): po4, dop, oxygen, phyto, zoo, det, no3
+    -DCARBON (2):      dic, alk
+    -DORGCARBON (4):   doc, poc, phytoc, zooc
+    -DPFT (2)	       phyto2, phytoc2
+(w/ my 2 new tracers, the total is 15 -> modify runscript)
+
+BGC fluxes
+    original MOPS (7): photo, graze, sediment, remin, runoff, nfix, denit
+    TT (1):  	       par
+    -DORGCARBON (3):   sediment_c, cp_phyto_uptake, cp_zoo_uptake
+    -DPFT (2):	       photo2, cp_phyto2_uptake
+(w/ my 2 new diagnositics, the total is 13)
+
+Files modified:
+      BGC_MODEL.F:			   main part where actual BGC calculations take place
+      BGC_DIAGNOSTICS: 			   output - must be in order
+      BGC_INI.F:    			   initialized new vars, phytoplankton growth parameters
+      BGC_PARAMS.h:			   added new tracers: iphy2, iphyc2
+      CALC_CP.F				   modified to allow second PFT
+      external_forcing_mops_biogeochem.c   Petsc/interface between MOPS and ECCO...added 2 new flux outputs
+      mops_biogeochem_set_params.F	   added 5 parameters: 1 pft, 4 "s" parameters
+      mops_biogeochem_tmm.h		   added 2 new flux outputs
+      mops_biogeeohem_diagnostics.F	   added 2 new flux outputs
+
+I can see where I added the new flux outputs.
+What about the tracer ouputs? I've added new tracers: iphy2 and iphyc2 (see BGC_PARAMS.h) 
+
 TT, 2021-06-16
 This file documents MOPS-CP which added 4 new tracers related to organic carbon chemistry (DOC, POC, Phyto C, and ZOO C). 
 C:P uptake ratio of phytoplankton and zooplankton are flexible and are modeled using power-law formulation. It was developed from MOPS Ver2.0. 

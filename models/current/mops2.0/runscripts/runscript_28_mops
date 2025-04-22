@@ -5,7 +5,7 @@
 #SBATCH --time=00:20:00
 #SBATCH --mail-type=ALL  
 #SBATCH --mail-user=katsumi@umn.edu
-#SBATCH -p small
+#SBATCH -p msismall
 #SBATCH --output=%j.out
 #SBATCH -e error.%j
 
@@ -14,9 +14,8 @@ cd $SLURM_SUBMIT_DIR
 echo "Dir in slurm: " $PWD
 
 module purge
-module load intel
-module load impi/intel
-module load cmake
+module load intel/cluster/2021
+module load cmake/3.26.3
 module list
 
 # 360 days per year with a time step of 2 steps per day:

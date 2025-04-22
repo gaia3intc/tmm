@@ -28,14 +28,16 @@ usePFT = 1;        % set to 1 if option DPFT was used, 0 otherwise
 useFLEXCP = 1;     % set to 1 if option DFLEXCP was used, 0 otherwise
    
 %%%%% Set toplevel path to GCMs configuration
-basepath='~/TMM2/MITgcm_2.8deg';
-%basepath='~/TMM2/MITgcm_ECCO';
+base_path='/home/matsumot/katsumi/TMM2/MITgcm_2.8deg';
+%base_path='~/TMM2/MITgcm_2.8deg';
+%base_path='~/TMM2/MITgcm_ECCO';
 
-addpath(genpath('~/TMM2/tmm_matlab_code'));
+addpath(genpath('/home/matsumot/katsumi/TMM2/tmm_matlab_code'));
+%addpath(genpath('~/TMM2/tmm_matlab_code'));
 
-load(fullfile(basepath,'config_data'))
-matrixPath=fullfile(basepath,matrixPath);
-gridFile=fullfile(basepath,'grid');
+load(fullfile(base_path,'config_data'))
+matrixPath=fullfile(base_path,matrixPath);
+gridFile=fullfile(base_path,'grid');
 load(gridFile,'nx','ny','nz','dz','dznom','x','y','z');
 boxFile=fullfile(matrixPath,'Data','boxes');
 load(boxFile,'Xboxnom','Yboxnom','Zboxnom','ixBox','iyBox','izBox','nb','volb');

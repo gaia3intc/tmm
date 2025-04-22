@@ -5,10 +5,15 @@
 
 ['load_pco2']
 
+base_path='/home/matsumot/katsumi/TMM2/MITgcm_2.8deg';
 %basepath='~/TMM2/MITgcm_ECCO';
-basepath='~/TMM2/MITgcm_2.8deg';
-addpath(genpath('~/TMM2/tmm_matlab_code'));
-oceanCarbonBasePath='~/TMM2/OceanCarbon';
+%basepath='~/TMM2/MITgcm_2.8deg';
+
+addpath(genpath('/home/matsumot/katsumi/TMM2/tmm_matlab_code'));
+%addpath(genpath('~/TMM2/tmm_matlab_code'));
+
+oceanCarbonBasePath='/home/matsumot/katsumi/TMM2/OceanCarbon';
+%oceanCarbonBasePath='~/TMM2/OceanCarbon';
 %---------------------------------------------------------------------------
 % Option to get pco2 based on Prescibed CO2 (useTimeVaryingPrescribed=1) or otherwise (useTimeVaryingPrescribed=0)
 useTimeVaryingPrescribedCO2=0
@@ -18,9 +23,9 @@ co2Scenario='historical';
 atmosDataPath=fullfile(oceanCarbonBasePath,'AtmosphericCarbonData');
 %-------------------------------------------------------------------------
 % Making pco2 timeseries data
-load(fullfile(basepath,'config_data'));
-matrixPath=fullfile(basepath,matrixPath);
-gridFile=fullfile(basepath,'grid');
+load(fullfile(base_path,'config_data'));
+matrixPath=fullfile(base_path,matrixPath);
+gridFile=fullfile(base_path,'grid');
 boxFile=fullfile(matrixPath,'Data','boxes');
 profilesFile=fullfile(matrixPath,'Data','profile_data');
 load(gridFile,'nx','ny','nz','x','y','z','gridType');

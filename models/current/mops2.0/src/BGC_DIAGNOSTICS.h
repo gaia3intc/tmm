@@ -2,7 +2,8 @@ C$Header: /Users/ikriest/CVS/mops/BGC_DIAGNOSTICS.h,v 1.2 2016/06/03 09:28:59 ik
 C$Name: mops-2_0 $
 
 ! KM restructured for backwards campatibility with PFT (8/2021)
-      
+! KM add f14_out, f15_out and ensure backwards compatibility (10/2023)
+ 
 ! MOPS arrays for diagnostics
 ! f8_out added by T.Tanioka (Nov 2020)
       real*8 f1_out(bgc_ktotal),    ! primary production
@@ -60,11 +61,15 @@ C$Name: mops-2_0 $
       ! MOPS + (CARBON assumed) + ORGCARBON + PFT + FLEXCP
       ! fbgc9 = Photosynthesis for PFT 2, fbgc10 = Sediment_C
       ! fbgc11 = PFT1 C:P uptake ratio, fbgc12 = PFT2 C:P uptake ratio, ffbgc13 = Zooplankton C:P uptake ratio
+      ! fbgc14 = ZFT1 grazing on PFT1, fbgc15 = ZFT1 grazing on PFT2
       real*8 f9_out(bgc_ktotal)
       real*8 f10_out(bgc_ktotal)
       real*8 f11_out(bgc_ktotal),f12_out(bgc_ktotal),f13_out(bgc_ktotal)
+      real*8 f14_out(bgc_ktotal),f15_out(bgc_ktotal)
       COMMON/DIAGVARS/f1_out,f2_out,f3_out,f4_out,f5_out,f6_out,f7_out,
-     &                f8_out,f9_out,f10_out,f11_out,f12_out,f13_out
+!km     &                f8_out,f9_out,f10_out,f11_out,f12_out,f13_out
+     &                f8_out,f9_out,f10_out,f11_out,f12_out,f13_out,
+     &                f14_out,f15_out
 #endif
 
 #endif      

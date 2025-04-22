@@ -2,10 +2,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
 #SBATCH --mem-per-cpu=2gb
-#SBATCH --time=00:20:00
+#SBATCH --time=00:25:00
 #SBATCH --mail-type=ALL  
 #SBATCH --mail-user=katsumi@umn.edu
-#SBATCH -p small
+#SBATCH -p msismall
 #SBATCH --output=%j.out
 #SBATCH -e error.%j
 
@@ -14,22 +14,21 @@ cd $SLURM_SUBMIT_DIR
 echo "Dir in slurm: " $PWD
 
 module purge
-module load intel
-module load impi/intel
-module load cmake
+module load intel/cluster/2021
+module load cmake/3.26.3
 module list
 
 # 360 days per year with a time step of 2 steps per day:
-mpirun -np 24 ./mops \
-        -numtracers 9 \
-        -i po4ini.petsc,dopini.petsc,oxyini.petsc,phyini.petsc,zooini.petsc,detini.petsc,no3ini.petsc,dicini.petsc,alkini.petsc \
+mpirun -np 24  ./mops_cp_pft \
+        -numtracers 15 \
+        -i po4ini.petsc,dopini.petsc,oxyini.petsc,phyini.petsc,zooini.petsc,detini.petsc,no3ini.petsc,dicini.petsc,alkini.petsc,docini.petsc,pocini.petsc,phycini.petsc,zoocini.petsc,phy2ini.petsc,phyc2ini.petsc \
         -me Ae \
         -mi Ai \
         -t0 0.0 -iter0 0 \
         -deltat_clock 0.0013888888888889 \
         -max_steps 72000 \
         -write_time_steps 7200 \
-        -o po4out.petsc,dopout.petsc,oxyout.petsc,phyout.petsc,zooout.petsc,detout.petsc,no3out.petsc,dicout.petsc,alkout.petsc \
+        -o po4out.petsc,dopout.petsc,oxyout.petsc,phyout.petsc,zooout.petsc,detout.petsc,no3out.petsc,dicout.petsc,alkout.petsc,docout.petsc,pocout.petsc,phycout.petsc,zoocout.petsc,phy2out.petsc,phyc2out.petsc \
         -external_forcing \
         -use_profiles \
         -nzeuph 2 \
@@ -44,9 +43,9 @@ mpirun -np 24 ./mops \
         -num_biogeochem_steps_per_ocean_step 8 \
         -separate_biogeochem_time_stepping \
         -time_avg -avg_start_time_step 71281 -avg_time_steps 60 \
-        -avg_files po4avg.petsc,dopavg.petsc,oxyavg.petsc,phyavg.petsc,zooavg.petsc,detavg.petsc,no3avg.petsc,dicavg.petsc,alkavg.petsc \
+        -avg_files po4avg.petsc,dopavg.petsc,oxyavg.petsc,phyavg.petsc,zooavg.petsc,detavg.petsc,no3avg.petsc,dicavg.petsc,alkavg.petsc,docavg.petsc,pocavg.petsc,phycavg.petsc,zoocavg.petsc,phy2avg.petsc,phyc2avg.petsc \
         -bgc_params_file biogem_params.txt \
-        -num_bgc_params 7 \
+        -num_bgc_params 23 \
         -calc_diagnostics -diag_start_time_step 71281 -diag_time_steps 60 \
-        -diag_files fbgc1.petsc,fbgc2.petsc,fbgc3.petsc,fbgc4.petsc,fbgc5.petsc,fbgc6.petsc,fbgc7.petsc,fbgc8.petsc \
-        > log_28TT_mops
+        -diag_files fbgc1.petsc,fbgc2.petsc,fbgc3.petsc,fbgc4.petsc,fbgc5.petsc,fbgc6.petsc,fbgc7.petsc,fbgc8.petsc,fbgc9.petsc,fbgc10.petsc,fbgc11.petsc,fbgc12.petsc,fbgc13.petsc,fbgc14.petsc,fbgc15.petsc \
+        > log_28_mopscp_pft_1pft_b

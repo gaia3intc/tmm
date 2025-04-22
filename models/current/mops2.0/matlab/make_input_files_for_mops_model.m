@@ -2,11 +2,15 @@
 %base_path='/data2/spk/TransportMatrixConfigs/MITgcm_2.8deg';
 % base_path='/data2/spk/TransportMatrixConfigs/MITgcm_ECCO';
 % base_path='/data2/spk/TransportMatrixConfigs/MITgcm_ECCO_v4';
-base_path='~/TMM2/MITgcm_2.8deg';
+%base_path='~/TMM2/MITgcm_2.8deg';
+base_path='/home/matsumot/katsumi/TMM2/MITgcm_2.8deg';
 %base_path='~/TMM2/MITgcm_ECCO';
 
-addpath(genpath('~/TMM2/tmm_matlab_code'));
-oceanCarbonBasePath='~/TMM2/OceanCarbon';
+addpath(genpath('/home/matsumot/katsumi/TMM2/tmm_matlab_code'));
+oceanCarbonBasePath='/home/matsumot/katsumi/TMM2/OceanCarbon';
+%addpath(genpath('~/TMM2/tmm_matlab_code'));
+%oceanCarbonBasePath='~/TMM2/OceanCarbon';
+
 atmosDataPath=fullfile(oceanCarbonBasePath,'AtmosphericCarbonData');
 
 periodicForcing=1

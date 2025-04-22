@@ -2,7 +2,9 @@
 # Create symbolic links to all the input files in a directory, except *.m file
 # This assumes all the files have already created in the directory "input_dir"
 shopt extglob
-input_dir='/home/matsumot/tanio003/TMM2/Runs/MOPS/Testruns_ECCO/inputs_ECCO'
+#input_dir='/home/matsumot/tanio003/TMM2/Runs/MOPS/Testruns_ECCO/inputs_ECCO'
+#input_dir='/home/matsumot/katsumi/TMM2/Runs/MOPS/inputs_ECCO'
+input_dir='/home/matsumot/katsumi/TMM2/Runs/MOPS/inputs_28'
 for file in $input_dir/*[^.m]
 do 
     if [ -f "$file" ] 
